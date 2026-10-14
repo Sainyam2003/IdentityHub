@@ -1,0 +1,43 @@
+@model IdentityHub.Models.LoginViewModel
+@{
+    Layout = null;
+}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sign in - IdentityHub</title>
+    <style>
+        body { font: 16px system-ui, sans-serif; margin: 4rem auto; max-width: 32rem; padding: 0 1rem; color: #172033; }
+        h1 { font-size: 1.8rem; }
+        form { margin: 1rem 0; }
+        button { width: 100%; padding: .8rem; border: 1px solid #9aa4b2; border-radius: .4rem; background: white; font: inherit; cursor: pointer; }
+        button:hover { background: #f1f5f9; }
+        .error { color: #a11; }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>Sign in</h1>
+        <p>Choose an identity provider to continue.</p>
+        @if (Model.Error is not null)
+        {
+            <p class="error" role="alert">@Model.Error</p>
+        }
+        @if (Model.Providers.Count == 0)
+        {
+            <p>No external identity providers are configured. Set provider credentials in the environment and restart the application.</p>
+        }
+        @foreach (var provider in Model.Providers)
+        {
+            <form asp-controller="Account" asp-action="ExternalLogin" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="provider" value="@provider.Scheme" />
+                <input type="hidden" name="returnUrl" value="@Model.ReturnUrl" />
+                <button type="submit">Continue with @provider.DisplayName</button>
+            </form>
+        }
+    </main>
+</body>
+</html>
